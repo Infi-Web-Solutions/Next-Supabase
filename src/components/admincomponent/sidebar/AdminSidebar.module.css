@@ -1,0 +1,27 @@
+/* src/components/admincomponent/sidebar/AdminSidebar.module.css */
+
+.sidebar {
+  background-color: #212529;
+  color: white;
+  min-height: 100vh;
+  width: 240px;
+  padding: 1rem;
+}
+
+.link {
+  color: white;
+  padding: 8px 12px;
+  display: block;
+  text-decoration: none;
+}
+
+.link:hover {
+  background-color: #343a40;
+  border-radius: 4px;
+}
+
+
+.sidebar a:hover {
+  background-color: #495057;
+}
+
