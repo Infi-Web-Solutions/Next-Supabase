@@ -77,6 +77,7 @@ bash
 Copy
 Edit
 npm install
+
 2. ⚙️ Configure Environment Variables
 Create a .env.local file in the root directory of your project. You can start by copying the provided .env.example file:
 
