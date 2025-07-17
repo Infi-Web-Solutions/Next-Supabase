@@ -73,23 +73,14 @@ Stores profile metadata
 1. 📦 Install Dependencies
 Clone the repository and install all dependencies using:
 
-bash
-Copy
-Edit
 npm install
 
 2. ⚙️ Configure Environment Variables
 Create a .env.local file in the root directory of your project. You can start by copying the provided .env.example file:
 
-bash
-Copy
-Edit
 cp .env.example .env.local
 Then, update the values as needed. Here's an example:
 
-env
-Copy
-Edit
 NEXT_PUBLIC_SUPABASE_URL=https://tqcpfyxtxzficnsjyftd.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_public_anon_key_here
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
@@ -99,8 +90,6 @@ STRIPE_WEBHOOK_SECRET="your_webhook_secret"
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
 3. 🚀 Start the Development Server
-bash
-Copy
-Edit
+
 npm run dev
 This will start your Next.js 15 development server at http://localhost:3000.
