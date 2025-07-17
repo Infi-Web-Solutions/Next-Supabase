@@ -1,6 +1,6 @@
 
 import { NextResponse } from 'next/server'
-import supabaseAdmin from '@/lib/supabase/serveclient' // Admin client
+import supabaseAdmin from '@/lib/supabase/serveclient' 
 
 export async function POST(req) {
   try {
@@ -11,18 +11,16 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
     }
 
-    // Map role name to ID
     const role_id = role === 'admin' ? 1 : 2
 
-    // 1️⃣ Create user in Supabase Auth
    const { data: user, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
   email,
   password,
-  email_confirm: true, // ensures email is confirmed
+  email_confirm: true, 
   user_metadata: {
     name,
     contact,
-    role: role_id, // store role_id (1, 2, 3)
+    role: role_id, 
   },
 });
 
@@ -31,7 +29,6 @@ export async function POST(req) {
       return NextResponse.json({ error: signUpError.message }, { status: 500 })
     }
 
-    // 2️⃣ Save to system_users table
     const { error: insertError } = await supabaseAdmin.from('system_users').insert([
       {
         id: user.user.id,
@@ -48,7 +45,7 @@ export async function POST(req) {
 
     return NextResponse.json({ success: true })
   } catch (err) {
-    console.error('❌ API Error:', err)
+    console.error(' API Error:', err)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }

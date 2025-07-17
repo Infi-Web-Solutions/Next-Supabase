@@ -2,20 +2,20 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { createServerClientWithCookies } from "@/lib/serverpayment";
 
-const stripe = new Stripe(process.env.PAY_SECRET); 
+const stripe = new Stripe(process.env.PAY_SECRET);
 
 export async function POST(req) {
   try {
     const { product } = await req.json();
 
-    const supabase =  createServerClientWithCookies(); 
+    const supabase = createServerClientWithCookies();
 
     const {
       data: { user },
-       error: authError,
+      error: authError,
     } = await supabase.auth.getUser();
 
-     if (authError || !user) {
+    if (authError || !user) {
       return NextResponse.json(
         {
           success: false,
@@ -44,15 +44,15 @@ export async function POST(req) {
           quantity: 1,
         },
       ],
-     metadata: {
-  productId: product.id,
-  productName: product.name,
-  price: product.price,
-  userId: user.id,
-  email: user.email,
-  quantity: 1, 
-  paymentIntentId: "",
-},
+      metadata: {
+        productId: product.id,
+        productName: product.name,
+        price: product.price,
+        userId: user.id,
+        email: user.email,
+        quantity: 1,
+        paymentIntentId: "",
+      },
 
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/products`,

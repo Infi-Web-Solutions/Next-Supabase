@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.PAY_SECRET);
 
 export const config = {
   api: {
-    bodyParser: false, // Stripe sends raw body
+    bodyParser: false, 
   },
 };
 
@@ -32,7 +32,7 @@ export async function POST(req) {
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
   }
 
-  // ✅ Handle the event
+  
   if (event.type === "checkout.session.completed") {
   const session = event.data.object;
 

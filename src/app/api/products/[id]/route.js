@@ -74,7 +74,7 @@ export async function GET(req, { params }) {
 
 
 export async function PUT(req, { params }) {
- const supabase = createServerClientWithCookies();// SSR-safe supabase
+ const supabase = createServerClientWithCookies();
 
   try {
     const {
@@ -85,7 +85,6 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // ✅ Get the user's role from DB
     const { data: sysUser } = await supabase
       .from("system_users")
       .select("role_id")
@@ -109,7 +108,6 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // ✅ Do the update (same as before)
     const formData = await req.formData();
     const updateData = {};
     for (const [key, value] of formData.entries()) {
