@@ -96,7 +96,6 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 PAY_SECRET="your_stripe_secret_key"
 STRIPE_WEBHOOK_SECRET="your_webhook_secret"
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
-⚠️ Never commit .env.local – keep your secrets safe!
 
 3. 🚀 Start the Development Server
 bash
