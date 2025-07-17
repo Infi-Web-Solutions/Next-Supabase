@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 
 export default function ProductCard({ product }) {
   const router = useRouter();
@@ -7,7 +7,7 @@ export default function ProductCard({ product }) {
     router.push(`/products/${product.id}`);
   };
 
-  
+
 
   const imageUrl = product.image
     ? `/uploads/${product.image}`
@@ -24,7 +24,10 @@ export default function ProductCard({ product }) {
 
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{product.name}</h5>
-        <p className="card-text">{product.description}</p>
+        <p className="card-text">
+          {product.description?.split(" ").slice(0, 6).join(" ")}...
+        </p>
+
         <p className="card-text fw-bold text-primary">₹{product.price}</p>
 
         <button className="btn btn-primary w-100" onClick={handleOrderClick} >

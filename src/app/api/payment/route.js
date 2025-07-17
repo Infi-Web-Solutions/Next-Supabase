@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/serverpayment";
+import { createServerClientWithCookies } from "@/lib/serverpayment";
 
 const stripe = new Stripe(process.env.PAY_SECRET); 
 
@@ -8,7 +8,7 @@ export async function POST(req) {
   try {
     const { product } = await req.json();
 
-    const supabase = await createSupabaseServerClient(); 
+    const supabase =  createServerClientWithCookies(); 
 
     const {
       data: { user },

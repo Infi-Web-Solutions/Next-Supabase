@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import supabase from "@/lib/supabase/serveclient";
 import { cookies } from 'next/headers';
-import { createSupabaseServerClient } from '@/lib/serverpayment';
+import { createServerClientWithCookies } from '@/lib/serverpayment';
 
 
 const stripe = new Stripe(process.env.PAY_SECRET);
@@ -52,7 +52,7 @@ export async function POST(req) {
 
 export async function GET(req) {
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase =  createServerClientWithCookies();
 
     const {
       data: { user },

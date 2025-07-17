@@ -8,6 +8,8 @@ export default function AuthWrapper({ children, redirectTo = "/auth/login" }) {
   const supabase = createClientComponentClient();
   const [loading, setLoading] = useState(true);
 
+  // it is chekch by he supabase login or not so redirect that auth/login but now i 
+  // am not using this 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();

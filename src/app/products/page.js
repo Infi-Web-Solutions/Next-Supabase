@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import ProductCard from "../../components/usercomponent/products/ProductCard";
 // import AuthWrapper from "../../components/Authredirect";
+import '../../app/globals.css'
 
 export default function UserProductPage() {
   const [products, setProducts] = useState([]);
@@ -37,7 +38,7 @@ export default function UserProductPage() {
 
   return (
     // <AuthWrapper>
-    <div className="container py-4">
+    <div className="container py-4 productcont ">
       <div className="text-center mb-4">
         <h2 className="text-2xl font-semibold">Available Products</h2>
       </div>

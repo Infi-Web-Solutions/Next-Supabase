@@ -6,11 +6,17 @@ import Swal from "sweetalert2";
 export default function PlansPage() {
   const [plans, setPlans] = useState([]);
 
-  useEffect(() => {
-    fetch("/api/stripe/plans")
-      .then((res) => res.json())
-      .then((data) => setPlans(data.plans || []));
-  }, []);
+useEffect(() => {
+  fetch("/api/stripe/plans")
+    .then((res) => res.json())
+    .then((data) => {
+      const sortedPlans = (data.plans || []).sort((a, b) => {
+        const order = ["Free", "Pro", "Premium"];
+        return order.indexOf(a.name) - order.indexOf(b.name);
+      });
+      setPlans(sortedPlans);
+    });
+}, []);
 
   // async function handleSubscribe(priceId) {
   //   const res = await fetch("/api/stripe/plans", {

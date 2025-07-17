@@ -1,7 +1,7 @@
 import { buffer } from "micro";
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "../../../../lib/serverpayment";
+import { createServerClientWithCookies } from "../../../../lib/serverpayment";
 
 
 
@@ -36,7 +36,7 @@ export async function POST(req) {
   if (event.type === "checkout.session.completed") {
   const session = event.data.object;
 
-const supabase = await createSupabaseServerClient(
+const supabase =  createServerClientWithCookies(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );

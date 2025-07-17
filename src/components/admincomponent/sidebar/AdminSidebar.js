@@ -20,7 +20,7 @@ export default function AdminSidebar() {
     <div className={styles.sidebar}>
       <nav className="nav flex-column mt-5">
 
-        <Link href="/admin" className={`${styles.link} ${isActive("/admin") ? styles.active : ""}`}>
+        <Link href="/admin/dashboard" className={`${styles.link} ${isActive("/admin/dashboard") ? styles.active : ""}`}>
           Dashboard
         </Link>
 

@@ -2,7 +2,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-
+import '../../../app/globals.css'
 export default function ProductDetailPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -75,7 +75,7 @@ const handleBuyNow = async () => {
     : "/placeholder.png";
 
   return (
-    <div className="container mt-4">
+    <div className="container productcont">
       <div className="row">
         <div className="col-md-6">
           <img

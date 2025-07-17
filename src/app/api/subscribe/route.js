@@ -1,10 +1,10 @@
 
 import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/serverpayment";
+import { createServerClientWithCookies } from "@/lib/serverpayment";
 
 export async function GET() {
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase =  createServerClientWithCookies();
 
     const {
       data: { user },

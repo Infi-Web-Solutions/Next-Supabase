@@ -30,7 +30,7 @@ export async function middleware(req) {
 
   // ✅ 2. Protect /admin routes (only admin and staff allowed)
   if (pathname.startsWith('/admin') && ![1, 2].includes(role)) {
-  return NextResponse.redirect(new URL('/unauthorized', req.url));
+  return NextResponse.redirect(new URL('/unauthorize', req.url));
 }
 
 

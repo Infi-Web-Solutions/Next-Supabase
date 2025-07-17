@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import Link from "next/link";
+import Swal from "sweetalert2";
 
 export default function Login() {
   const router = useRouter();
