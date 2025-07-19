@@ -43,10 +43,16 @@ export default function Login() {
   // const decodedPayload = JSON.parse(atob(base64Payload));
 
   // console.log("✅ Decoded JWT Payload:", decodedPayload);
+  //   }
 
+    const userMetadata = session.data.session?.user.user_metadata;
+    console.log("user meta data chekhc ",userMetadata)
 
-    const role_id = session.data.session?.user.user_metadata?.role;
+const role_id = userMetadata?.role;
+const organization_id = userMetadata?.organization_id;
+const organization_slug = userMetadata?.organization_slug;
 
+console.log("org_id", organization_id, "slug", organization_slug);
    console.log("role_id", role_id);
 
     // ✅ Fetch permissions if staff/admin

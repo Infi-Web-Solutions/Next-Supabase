@@ -3,34 +3,75 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../../../lib/supabase/client' // ✅ Correct import for Next 15 App Router
+import { useEffect } from 'react'
 
 export default function SignUpPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   const [form, setForm] = useState({
     name: '',
     email: '',
     contact: '',
     password: '',
-  })
+  });
 
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [organizationId, setOrganizationId] = useState(null);
 
   const handleChange = (e) => {
     setForm((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }))
-  }
+    }));
+  };
 
- const handleSignUp = async (e) => {
+  useEffect(() => {
+    const getOrgId = async () => {
+      const subdomain = window.location.hostname.split('.')[0];
+
+      const { data: orgData, error: orgError } = await supabase
+        .from('organizations')
+        .select('id')
+        .eq('slug', subdomain)
+        .single();
+
+      if (orgError || !orgData) {
+        setError('Organization not found');
+        return;
+      }
+
+      setOrganizationId(orgData.id);
+    };
+
+    getOrgId();
+  }, []);
+
+  const handleSignUp = async (e) => {
   e.preventDefault();
   setError('');
   setSuccess('');
 
   const { name, email, contact, password } = form;
 
+  // Get subdomain (like "quickmart")
+  const subdomain = window.location.hostname.split('.')[0];
+
+  // Fetch organization ID based on subdomain
+  const { data: orgData, error: orgError } = await supabase
+    .from('organizations')
+    .select('id')
+    .eq('slug', subdomain)
+    .single();
+
+  if (orgError || !orgData) {
+    setError('Organization not found');
+    return;
+  }
+
+  const organization_id = orgData.id;
+
+  // Create Supabase Auth User
   const { data, error: signUpError } = await supabase.auth.signUp({
     email,
     password,
@@ -38,6 +79,7 @@ export default function SignUpPage() {
       data: {
         name,
         contact,
+        organization_id, // 👈 Save this in the user's metadata
       },
     },
   });
@@ -46,6 +88,15 @@ export default function SignUpPage() {
     setError(signUpError.message);
     return;
   }
+
+  // Also save to your own 'users' table (optional but recommended)
+  await supabase.from('users').insert({
+    name,
+    email,
+    contact,
+    organization_id,
+    auth_id: data.user?.id,
+  });
 
   setSuccess('Account created! Please verify your email.');
   setForm({ name: '', email: '', contact: '', password: '' });

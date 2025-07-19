@@ -3,13 +3,14 @@
 import { useState } from "react";
 
 export default function Createusers() {
- 
- const [form, setForm] = useState({
+
+  const [form, setForm] = useState({
     name: "",
     email: "",
     contact: "",
     password: "",
     role: "",
+    organization_id: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,7 @@ export default function Createusers() {
         contact: "",
         password: "",
         role: "",
+      
       });
     } else {
       setMessage("❌ Error: " + (result.error || "Something went wrong"));

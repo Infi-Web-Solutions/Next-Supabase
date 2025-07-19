@@ -122,7 +122,7 @@ export default function UserNavbar() {
       <div className="container">
         <nav className={styles.navbar}>
           <Link href="/" className={styles["navbar-brand"]}>
-            QuickKart
+            Shop
           </Link>
 
           {/* ✅ NEW wrapper for nav links + dropdown */}
