@@ -33,6 +33,25 @@ export default function UserNavbar() {
   //   fetchFeatures();
   // }, []);
 
+  const [subdomain, setSubdomain] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hostname = window.location.hostname; 
+      const parts = hostname.split(".");
+
+      if (hostname.includes("localhost")) {
+        const localParts = hostname.split(".");
+        if (localParts.length >= 2) {
+          setSubdomain(localParts[0]); 
+        }
+      } else if (parts.length >= 3) {
+        setSubdomain(parts[0]); // 
+      } else {
+        setSubdomain("www");
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const fetchFeatures = async () => {
@@ -51,9 +70,22 @@ export default function UserNavbar() {
     const checkAuthStatus = async () => {
       const { data } = await supabase.auth.getUser();
       const user = data?.user;
+
       setIsLoggedIn(!!user);
+
       if (user) {
-        setUserEmail(user.email);  // ✅ Set user email
+   
+        const { data: normalUser, error } = await supabase
+          .from("users")
+          .select("email")
+          .eq("id", user.id)
+          .single();
+
+        if (normalUser && !error) {
+          setUserEmail(normalUser.email);
+        } else {
+          setUserEmail(""); 
+        }
       }
     };
 
@@ -104,7 +136,7 @@ export default function UserNavbar() {
         });
 
         router.push("/");
-        setIsLoggedIn(false); // <-- Set false after logout
+        setIsLoggedIn(false); 
       } catch (err) {
         console.error("Logout error:", err.message);
         Swal.fire({
@@ -122,7 +154,7 @@ export default function UserNavbar() {
       <div className="container">
         <nav className={styles.navbar}>
           <Link href="/" className={styles["navbar-brand"]}>
-            Shop
+            {subdomain.charAt(0).toUpperCase() + subdomain.slice(1)} {/* Capitalized */}
           </Link>
 
           {/* ✅ NEW wrapper for nav links + dropdown */}
@@ -132,12 +164,14 @@ export default function UserNavbar() {
 
               <Link href="/products" className={`${styles.link} mt-0 btn btn-link`}>Products</Link>
 
-              {hasFeature("my order") ? (
+              {/* {hasFeature("my order") ? (
                 <Link href="/orders" className={styles.link}>My Orders</Link>
               ) : (
                 <button onClick={handleUpgradeAlert} className={`${styles.link} mt-0 btn btn-link`}>My Orders</button>
-              )}
+              )} */}
 
+              <Link href="/orders" className={styles.link}>My Orders</Link>
+{/* 
               {hasFeature("document") ? (
                 <Link href="/document" className={styles.link}>Document</Link>
               ) : (
@@ -148,7 +182,7 @@ export default function UserNavbar() {
                 <Link href="/learning" className={styles.link}>Learning</Link>
               ) : (
                 <button onClick={handleUpgradeAlert} className={`${styles.link} btn btn-link`}>Learning</button>
-              )}
+              )} */}
             </div>
 
             {/* Profile icon dropdown */}

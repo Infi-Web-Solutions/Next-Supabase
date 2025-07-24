@@ -1,79 +1,3 @@
-// import DataTableWrapper from "../../sharedcomponent/datatable/Table";
-// import { useRouter } from "next/navigation";
-// import { useState ,useEffect } from "react";
-
-// export default function ProductTable({ product }) {
-//   const router = useRouter();
-
-//   const [permissions, setPermissions] = useState([]);
-
-//   // useEffect(() => {
-//   //   fetch("/api/userpermission")
-//   //     .then(res => res.json())
-//   //     .then(data => setPermissions(data.permissions || []))
-//   //     .catch(err => console.error(err));
-//   // }, []);
-
-
-
-//    const baseColumns = [
-//     {
-//       name: "Product Category",
-//       selector: row => row.category,
-//       sortable: true,
-//     },
-//     {
-//       name: "Image",
-//       cell: row => (
-//         <img
-//           src={`/uploads/${row.image}`}
-//           alt={row.name}
-//           style={{
-//             width: "60px",
-//             height: "60px",
-//             objectFit: "cover",
-//             borderRadius: "8px",
-//           }}
-//         />
-//       ),
-//     },
-//     { name: "Name", selector: row => row.name },
-//     { name: "Price", selector: row => `₹${row.price}` },
-//     { name: "Description", selector: row => row.description },
-//   ];
-
-//   //  Conditionally include "Action" column if permission exists
-//   // const hasActionPermission = permissions.includes("product_update_product") || permissions.includes("product_delete");
-
-//   // if (hasActionPermission) {
-//     baseColumns.push({
-//       name: "Action",
-//       cell: row => (
-//         <div className="d-flex gap-2">
-//           {/* {permissions.includes("product_update_product") && ( */}
-//             {/* <button
-//               className="btn btn-sm btn-primary"
-//               onClick={() => router.push(`/admin/products/${row._id}`)}
-//             >
-//               Update
-//             </button> */}
-//           {/* )} */}
-//           {/* Uncomment if delete permission added in future */}
-//           {/* {permissions.includes("product_delete") && (
-//             <button
-//               className="btn btn-sm btn-danger"
-//               onClick={() => handleDelete(row._id)}
-//             >
-//               Delete
-//             </button>
-//           )} */}
-//         </div>
-//       ),
-//     });
-//   // }
-
-//   return <DataTableWrapper title="Product List" columns={baseColumns} data={product} />;
-// }
 
 
 "use client";
@@ -86,7 +10,6 @@ export default function ProductTable() {
   const [products, setProducts] = useState([]);
   const [permissions, setPermissions] = useState([]);
 
-  // ✅ Load permissions from localStorage
   useEffect(() => {
     const stored = localStorage.getItem("permissions");
     if (stored) {
@@ -99,7 +22,6 @@ export default function ProductTable() {
     }
   }, []);
 
-  // ✅ Fetch products
   useEffect(() => {
     fetch("/api/products")
       .then(res => res.json())
@@ -109,10 +31,8 @@ export default function ProductTable() {
       .catch(err => console.error("Error fetching products", err));
   }, []);
 
-  // ✅ Permission check utility
   const hasPermission = (perm) => permissions.includes(perm);
 
-  // ✅ Columns with conditional "Update" button
   const baseColumns = useMemo(() => {
     const columns = [
       {
@@ -135,12 +55,42 @@ export default function ProductTable() {
           />
         ),
       },
-      { name: "Name", selector: row => row.name },
-      { name: "Price", selector: row => `₹${row.price}` },
-      { name: "Description", selector: row => row.description },
+
+       {
+      name: "Name",
+      selector: row => row.name,
+      sortable: true,
+      wrap: true,
+    },
+   
+       {
+      name: "Price",
+      selector: row => `₹${row.price}`,
+      sortable: true,
+      width: "100px",
+    },
+ 
+       {
+      name: "Description",
+      selector: row => row.description,
+      sortable: false,
+      wrap: true,
+      grow: 2, 
+       cell: row => (
+    <div
+      style={{
+        maxHeight: "60px",          
+        overflowY: "auto",           
+        whiteSpace: "normal",       
+        textOverflow: "ellipsis",
+      }}
+    >
+      {row.description}
+    </div>
+  ),
+    },
     ];
 
-    // Conditionally add "Action" column
     if (hasPermission("products:update")) {
       columns.push({
         name: "Action",

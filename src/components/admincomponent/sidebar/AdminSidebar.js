@@ -78,6 +78,15 @@ export default function AdminSidebar() {
           </Link>
         )}
 
+          {userPermissions.includes("addcredentials:view") && (
+          <Link
+            href="/admin/stripecredentials"
+            className={`${styles.link} ${isActive("/admin/stripecredentials") ? styles.active : ""}`}
+          >
+         Add credentials
+          </Link>
+        )}
+
       </nav>
     </div>
   )

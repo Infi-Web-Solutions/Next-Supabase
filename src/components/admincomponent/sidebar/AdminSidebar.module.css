@@ -4,8 +4,10 @@
   background-color: #212529;
   color: white;
   min-height: 100vh;
-  width: 240px;
+  width: 200px;
+  /* max-width: 180px; */
   padding: 1rem;
+  flex-shrink: 0;  
 }
 
 .link {
@@ -24,4 +26,3 @@
 .sidebar a:hover {
   background-color: #495057;
 }
-

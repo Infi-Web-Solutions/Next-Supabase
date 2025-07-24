@@ -1,14 +1,18 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
+import '../../app/globals.css'
 
 export default function SuccessPage() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [status, setStatus] = useState("Saving order...");
+  const calledRef = useRef(false); 
 
   useEffect(() => {
-    if (sessionId) {
+    if (sessionId && !calledRef.current) {
+      calledRef.current = true;
+
       fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -25,5 +29,5 @@ export default function SuccessPage() {
     }
   }, [sessionId]);
 
-  return <div className="p-4 text-center">{status}</div>;
+  return <div className="p-4 text-center productcont">{status}</div>;
 }

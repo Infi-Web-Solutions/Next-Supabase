@@ -21,10 +21,37 @@ export default function OrderTable({ orders }) {
         />
       ),
     },
-    { name: "Name", selector: row => row.productId?.name },
-    { name: "Price", selector: row => `₹${row.productId?.price}` },
-    { name: "Description", selector: row => row.productId?.description },
-    { name: "Date", selector: row => new Date(row.createdAt).toLocaleString() },
+     {
+      name: "Name",
+      selector: row => row.productId?.name,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Price",
+      selector: row => `₹${row.productId?.price}`,
+      sortable: true,
+      width: "100px",
+    },
+    {
+      name: "Description",
+      selector: row => row.productId?.description,
+      sortable: false,
+      wrap: true,
+      grow: 2, 
+      style: {
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+     
+      },
+    },
+    {
+      name: "Date",
+      selector: row => new Date(row.createdAt).toLocaleString(),
+      sortable: true,
+      width: "180px",
+    },
   ];
 
   return <DataTableWrapper title="Order List" columns={columns} data={orders} />;

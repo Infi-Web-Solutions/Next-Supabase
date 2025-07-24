@@ -7,6 +7,77 @@ import Link from "next/link";
 import Swal from "sweetalert2";
 
 export default function Login() {
+  //   const router = useRouter();
+  //   const [form, setForm] = useState({ email: "", password: "" });
+  //   const [error, setError] = useState("");
+
+  //   const handleChange = (e) => {
+  //     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  //   };
+
+  //   const handleLogin = async (e) => {
+  //     e.preventDefault();
+  //     setError("");
+
+  //     const { email, password } = form;
+
+  //     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  //     if (error) {
+  //       setError(error.message);
+  //       return;
+  //     }
+
+  //      await supabase.auth.refreshSession();
+
+  //     // ✅ Get role from JWT
+  //     const session = await supabase.auth.getSession();
+  //     console.log("checking session ",session)
+
+  //     //we can check to cosole the jwt 
+  //   //   if (session?.data?.session) {
+  //   // const jwt = session.data.session.access_token;
+
+  //   // // Decode JWT to see claims
+  //   // const base64Payload = jwt.split(".")[1];
+  //   // const decodedPayload = JSON.parse(atob(base64Payload));
+
+  //   // console.log("✅ Decoded JWT Payload:", decodedPayload);
+  //   //   }
+
+  //     const userMetadata = session.data.session?.user.user_metadata;
+  //     console.log("user meta data chekhc ",userMetadata)
+
+  // const role_id = userMetadata?.role;
+  // const organization_id = userMetadata?.organization_id;
+  // const organization_slug = userMetadata?.organization_slug;
+
+  // console.log("org_id", organization_id, "slug", organization_slug);
+  //    console.log("role_id", role_id);
+
+  //     // ✅ Fetch permissions if staff/admin
+  //     let permissions = [];
+
+  //     if (role_id === 1 || role_id === 2) {
+  //       const { data: perms, error: permError } = await supabase
+  //         .from("role_permissions")
+  //         .select("permission:permission_id(module, action)")
+  //         .eq("role_id", role_id);
+
+  //       permissions = perms?.map(p => `${p.permission.module}:${p.permission.action}`) || [];
+  //       localStorage.setItem("permissions", JSON.stringify(permissions));
+  //     }
+
+  //     // ✅ Redirect
+  //     if (role_id === 1) {
+  //       router.push("/admin/dashboard");
+  //     } else if (role_id === 2) {
+  //       router.push("/admin/dashboard");
+  //     } else {
+  //       router.push("/");
+  //     }
+  //   };
+
   const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -21,41 +92,67 @@ export default function Login() {
 
     const { email, password } = form;
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    // 1. Sign in
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    if (error) {
-      setError(error.message);
+    if (authError) {
+      setError(authError.message);
       return;
     }
 
-     await supabase.auth.refreshSession();
+    await supabase.auth.refreshSession();
 
-    // ✅ Get role from JWT
-    const session = await supabase.auth.getSession();
-    console.log("checking session ",session)
+    const { data: sessionData } = await supabase.auth.getSession();
+    const session = sessionData?.session;
 
-    //we can check to cosole the jwt 
-  //   if (session?.data?.session) {
-  // const jwt = session.data.session.access_token;
+    if (!session) {
+      setError("Session not found.");
+      return;
+    }
 
-  // // Decode JWT to see claims
-  // const base64Payload = jwt.split(".")[1];
-  // const decodedPayload = JSON.parse(atob(base64Payload));
+    const userMetadata = session.user.user_metadata;
+    const role_id = userMetadata?.role;
+    const organization_id = userMetadata?.organization_id;
 
-  // console.log("✅ Decoded JWT Payload:", decodedPayload);
-  //   }
 
-    const userMetadata = session.data.session?.user.user_metadata;
-    console.log("user meta data chekhc ",userMetadata)
+    console.log(' Data', userMetadata)
 
-const role_id = userMetadata?.role;
-const organization_id = userMetadata?.organization_id;
-const organization_slug = userMetadata?.organization_slug;
 
-console.log("org_id", organization_id, "slug", organization_slug);
-   console.log("role_id", role_id);
+    if (!organization_id) {
+      setError("Organization not associated with this user.");
+      await supabase.auth.signOut();
+      return;
+    }
 
-    // ✅ Fetch permissions if staff/admin
+    // 2. Get current subdomain
+    const currentSubdomain = window.location.hostname.split(".")[0]; // e.g., "snapmart"
+
+    // 3. Fetch organization_slug using organization_id
+    const { data: orgData, error: orgError } = await supabase
+      .from("organizations")
+      .select("slug")
+      .eq("id", organization_id)
+      .single();
+
+    if (orgError || !orgData) {
+      setError("Organization not found.");
+      await supabase.auth.signOut();
+      return;
+    }
+
+    const userOrgSlug = orgData.slug;
+
+    // 4. Compare subdomain with organization slug
+    if (role_id !== 1 && currentSubdomain !== userOrgSlug) {
+      setError("Unauthorized organization access.");
+      await supabase.auth.signOut();
+      return;
+    }
+
+    // ✅ Load permissions
     let permissions = [];
 
     if (role_id === 1 || role_id === 2) {
@@ -77,6 +174,9 @@ console.log("org_id", organization_id, "slug", organization_slug);
       router.push("/");
     }
   };
+
+
+
 
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -128,7 +228,7 @@ console.log("org_id", organization_id, "slug", organization_slug);
               <button type="submit" className="btn btn-primary w-100 mb-3">
                 Login
               </button>
-               <Link
+              <Link
                 className="d-block text-center text-decoration-none"
                 href="/auth/signup"
               >
@@ -136,7 +236,7 @@ console.log("org_id", organization_id, "slug", organization_slug);
               </Link>
               <br></br>
             </form>
-         
+
 
             <button
               type="button"

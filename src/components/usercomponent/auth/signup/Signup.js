@@ -48,59 +48,63 @@ export default function SignUpPage() {
   }, []);
 
   const handleSignUp = async (e) => {
-  e.preventDefault();
-  setError('');
-  setSuccess('');
+    e.preventDefault();
+    setError('');
+    setSuccess('');
 
-  const { name, email, contact, password } = form;
+    const { name, email, contact, password } = form;
 
-  // Get subdomain (like "quickmart")
-  const subdomain = window.location.hostname.split('.')[0];
+    // Get subdomain (like "quickmart")
+    const subdomain = window.location.hostname.split('.')[0];
 
-  // Fetch organization ID based on subdomain
-  const { data: orgData, error: orgError } = await supabase
-    .from('organizations')
-    .select('id')
-    .eq('slug', subdomain)
-    .single();
+    // Fetch organization ID based on subdomain
+    const { data: orgData, error: orgError } = await supabase
+      .from('organizations')
+      .select('id')
+      .eq('slug', subdomain)
+      .single();
 
-  if (orgError || !orgData) {
-    setError('Organization not found');
-    return;
-  }
 
-  const organization_id = orgData.id;
+    if (orgError || !orgData) {
+      setError('Organization not found');
+      return;
+    }
 
-  // Create Supabase Auth User
-  const { data, error: signUpError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        name,
-        contact,
-        organization_id, // 👈 Save this in the user's metadata
-      },
-    },
-  });
+    const organization_id = orgData.id;
 
-  if (signUpError) {
-    setError(signUpError.message);
-    return;
-  }
+    // Create Supabase Auth User
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name,
+          contact,
+          organization_id,
+        },
+      }
 
-  // Also save to your own 'users' table (optional but recommended)
-  await supabase.from('users').insert({
-    name,
-    email,
-    contact,
-    organization_id,
-    auth_id: data.user?.id,
-  });
+    });
 
-  setSuccess('Account created! Please verify your email.');
-  setForm({ name: '', email: '', contact: '', password: '' });
-};
+    // console.log("data of signup user", infrom)
+
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
+    }
+
+    // // Also save to your own 'users' table (optional but recommended)
+    await supabase.from('users').insert({
+      name,
+      email,
+      contact,
+      organization_id,
+      auth_id: data.user?.id,
+    });
+
+    setSuccess('Account created! Please verify your email.');
+    setForm({ name: '', email: '', contact: '', password: '' });
+  };
 
 
   return (

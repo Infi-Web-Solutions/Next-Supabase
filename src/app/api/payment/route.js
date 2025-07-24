@@ -1,11 +1,18 @@
-import Stripe from "stripe";
+
 import { NextResponse } from "next/server";
 import { createServerClientWithCookies } from "@/lib/serverpayment";
+import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.PAY_SECRET);
 
 export async function POST(req) {
   try {
+
+
+    const host = req.headers.get("host");
+    const protocol = "http" ;
+    const baseUrl = `${protocol}://${host}`;
+
+
     const { product } = await req.json();
 
     const supabase = createServerClientWithCookies();
@@ -27,6 +34,34 @@ export async function POST(req) {
       );
     }
 
+    const organization_id = user.user_metadata?.organization_id;
+
+    if (!organization_id) {
+      return NextResponse.json(
+        { success: false, error: "Missing organization_id" },
+        { status: 400 }
+      );
+    }
+ const { data: orgData, error: orgError } = await supabase
+  .from("stripe_credentials")
+  .select("stripe_secret_key")
+  .eq("organization_id", organization_id)
+  .maybeSingle();
+
+
+    console.log("stripekey", orgData)
+
+    if (orgError || !orgData?.stripe_secret_key) {
+      return NextResponse.json(
+        { success: false, error: "Stripe key not found for organization" },
+        { status: 500 }
+      );
+    }
+
+    // ✅ Initialize Stripe with the correct key
+    const stripe = new Stripe(orgData.stripe_secret_key);
+
+    // ✅ Create Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -52,13 +87,16 @@ export async function POST(req) {
         email: user.email,
         quantity: 1,
         paymentIntentId: "",
+        organization_id: organization_id,
       },
-
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/products`,
+      // success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      // cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/products`,
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/products`,
     });
 
     return NextResponse.json({ success: true, url: session.url });
+
   } catch (err) {
     console.error("Stripe Error:", err);
     return NextResponse.json(
